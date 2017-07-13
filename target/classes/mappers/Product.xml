@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ProductMapper">
+	<resultMap type="Product" id="parentMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="kind" property="kind"/>
+		<result column="trem" property="trem"/>
+		<result column="price" property="price"/>
+		<result column="factory" property="factory"/>
+		<result column="info" property="info"/>
+	</resultMap>
+	<resultMap type="Product" id="productMap" extends="parentMap">
+		<collection property="sizes" ofType="Size">
+			<id column="sid" property="id"/>
+			<result column="sname" property="sname"/>
+			<association property="store" javaType="Store">
+				<result column="quantity" property="quantity"/>
+			</association>
+		</collection>
+	</resultMap>
+	
+	<select id="selectOne" parameterType="int" resultMap="productMap">
+    	select a.*,b.id sid,b.sname,c.quantity 
+    	from product a left join size b on a.id=b.pid
+		left join store c on c.pid=a.id and c.sid=b.id
+		where a.id=#{0} 
+	</select>
+</mapper>
